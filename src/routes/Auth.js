@@ -12,3 +12,5 @@ router.post('/login');
 // @route POST /api/auth/logout
 // @desc Logout a user
 router.post('/logout');
+
+module.exports = router;
