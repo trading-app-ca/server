@@ -12,6 +12,6 @@ router.put('/', auth);
 
 // @route DELETE /api/user
 // @desc Removes user and user related fields from database
-router.delete('/');
+router.delete('/', auth);
 
 module.exports = router;
