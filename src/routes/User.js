@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/auth');
 
 // @route GET /api/user
 // @desc Retrieve user info
-router.get('/');
+router.get('/', auth);
 
 // @route PUT /api/user
 // @desc Update user info
