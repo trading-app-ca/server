@@ -8,6 +8,6 @@ router.get('/', auth);
 
 // @route POST /api/trades/new-trade
 // @desc Place a new 'buy' or 'sell' order
-router.post('/new-trade');
+router.post('/new-trade', auth);
 
 module.exports = router;
