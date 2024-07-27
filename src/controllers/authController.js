@@ -5,6 +5,7 @@ const User = require("../models/User");
 
 
 const registerUser = async (request, response) => {
+    // Log user details to server console
     console.log('Registering new user:', `Request Body: ${JSON.stringify(request.body)}`);
 
     // Retrive user info
@@ -65,11 +66,77 @@ const registerUser = async (request, response) => {
             }
         );
     } catch (error) {
+        // Log caught error to server console and return server error to client
         console.error('Error:', error.message);
         response.status(500).send(`Server error`);
     }
 };
 
+
+
+const loginUser = async (request, response) => {
+    // Log user details to server console
+    console.log('Logging in user:', `Request Body: ${JSON.stringify(request.body)}`);
+
+    const invalidCredentials = async() => {
+        console.log('msg: missing login credentials');
+        return response.status(400).json({ msg: 'Please enter all fields' });
+    };
+
+    // Retrive user info
+    const { email, password } = request.body;
+
+    // Check for missing login credentials
+    if(!email || !password) {
+        invalidCredentials;
+    //     console.log('msg: missing login credentials');
+    //     return response.status(400).json({ msg: 'Please enter all fields' });
+    }
+
+    try {
+        
+        // Check user exists in database
+        let user = await User.findOne({ email });
+        // If no user exists log error in server console and return response
+        if (!user) {
+            invalidCredentials;
+            // console.log('msg: Invalid Credentials');
+            // return response.status(400).json({ msg: 'Invalid Credentials'});
+        }
+
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (!validPassword) {
+            invalidCredentials;
+        }
+
+        const payload = {
+            user: {
+                id: user.id
+            }
+        };
+
+        jwt.sign(
+            payload,
+            process.env.JWT_SECRET,
+            { expiresIn: 360000 },
+            (error, token) => {
+                if(error) {
+                    console.log(`Server error: ${error}`);
+                    throw error;
+                }
+                console.log('JWT token:', token);
+                response.json({ token });
+            }
+        );
+    } catch (error) {
+        // Log caught error to server console and return server error to client
+        console.error('Error', error.message);
+        return response.status(500).send('Server error');
+    }
+};
+
+
 module.exports = {
-    registerUser
+    registerUser,
+    loginUser
 }
