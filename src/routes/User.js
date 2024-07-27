@@ -8,7 +8,7 @@ router.get('/', auth);
 
 // @route PUT /api/user
 // @desc Update user info
-router.put('/');
+router.put('/', auth);
 
 // @route DELETE /api/user
 // @desc Removes user and user related fields from database
