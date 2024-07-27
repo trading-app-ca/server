@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/auth');
 
 //  @route POST /api/auth/register
 //  @desc Register a new user
@@ -11,6 +12,6 @@ router.post('/login');
 
 // @route POST /api/auth/logout
 // @desc Logout a user
-router.post('/logout');
+router.post('/logout', auth);
 
 module.exports = router;
