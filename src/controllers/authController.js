@@ -1,9 +1,11 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require("../models/User");
 
 
 
 const registerUser = async (request, response) => {
-    console.log('Registering new user: ', `Request Body: ${request.body}`);
+    console.log('Registering new user:', `Request Body: ${JSON.stringify(request.body)}`);
 
     // Retrive user info
     const { firstName, lastName, email, password } = request.body;
@@ -35,7 +37,7 @@ const registerUser = async (request, response) => {
 
         // Salt users password using bcrypt and log to server console
         user.password = await bcrypt.hash(password, salt);
-        console.log('Hashed Password: ', user.password);
+        console.log('Hashed Password:', user.password);
 
         // Save user info
         await user.save();
@@ -54,7 +56,11 @@ const registerUser = async (request, response) => {
             process.env.JWT_SECRET,
             { expiresIn: 360000 },
             (error, token) => {
-                if(error) throw error;
+                if(error) {
+                    console.log(`Server error: ${error}`);
+                    throw error;
+                };
+                console.log('JWT token:', token);
                 response.json({ token });
             }
         );
