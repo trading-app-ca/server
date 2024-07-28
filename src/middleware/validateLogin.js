@@ -5,8 +5,9 @@ const allowedFields = ['email', 'password'];
 
 module.exports = validateLogin = [
     check('email', 'Please include a valid email').isEmail(),
-    check('password', 'Password is required').exists(),
     check('password')
+        .exists().withMessage('Password is required')
+        .bail()  // Stop running validations if the password does not exist
         .isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
         .custom(value => {
             // Check that the password is not just blank spaces
