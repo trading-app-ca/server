@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require("../models/User");
-
+const { response } = require('../serverConfig');
 
 
 const registerUser = async (request, response) => {
@@ -128,7 +128,29 @@ const loginUser = async (request, response) => {
 };
 
 
+const logoutUser = async(request, response) => {
+    try {
+        // Retrieve JWT token from header
+        const token = request.header('Authorization');
+        // Check token exists
+        if (!token) {
+            console.log('No token provided')
+            return response.status(400).json({ msg: 'No token provided' });
+        }
+        // Revoke token
+
+        // Respond to client
+        response.json({ msg: 'User logged out successfully' });
+    } catch (error) {
+        // Log caught error to server console and return server error to client
+        console.log('Error', error.message);
+        return response.status(500).send('Server error');
+    }
+};
+
+
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
+    logoutUser
 }

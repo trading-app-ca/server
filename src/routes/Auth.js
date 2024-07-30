@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const validateLogin = require('../middleware/validateLogin');
-const { registerUser, loginUser } = require('../controllers/authController');
+const { registerUser, loginUser, logoutUser } = require('../controllers/authController');
 
 //  @route POST /api/auth/register
 //  @desc Register a new user
@@ -14,6 +14,6 @@ router.post('/login', validateLogin , loginUser);
 
 // @route POST /api/auth/logout
 // @desc Logout a user
-router.post('/logout', auth);
+router.post('/logout', auth, logoutUser);
 
 module.exports = router;
