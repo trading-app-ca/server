@@ -1,30 +1,12 @@
-const { check, body, validationResult } = require('express-validator');
+const { body, validationResult } = require('express-validator');
+const { validateEmail, validatePassword } = require('./validators');
 
 // Login fields
 const allowedFields = ['email', 'password'];
 
 module.exports = validateLogin = [
-    check('email', 'Please include a valid email').isEmail(),
-    check('password')
-        // Check password field exists
-        .exists().withMessage('Password is required')
-        
-        // Stop running validations if the password does not exist
-        .bail()
-
-        // Check length of password
-        .isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
-        
-        // Check password is not blank spaces
-        .custom(value => {
-            // Check that the password is not just blank spaces
-            if (value?.trim().length === 0) {
-                throw new Error('Password cannot be blank spaces');
-            }
-            return true;
-        }),
-
-    // Check Body does not contain extra fields
+    validateEmail,
+    validatePassword,
     body().custom(body => {
         const extraFields = Object.keys(body).filter(field => !allowedFields.includes(field));
         if (extraFields.length > 0) {
