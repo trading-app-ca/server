@@ -1,5 +1,16 @@
 const { check } = require('express-validator');
 
+const validateFirstName = [
+    check('firstName')
+        .exists().withMessage('First name is required')
+        .bail()
+        .isLength({ min: 3 }).withMessage('First name must be at least 3 characters long')
+        .isAlphanumeric().withMessage('First name must contain only alphanumeric characters')
+        .matches(/^\S+$/).withMessage('First name must not contain spaces')
+];
+
+
+
 const validateEmail = check('email', 'Please include a valid email').isEmail();
 
 const validatePassword = [
@@ -20,6 +31,7 @@ const validatePassword = [
 ];
 
 module.exports = {
+    validateFirstName,
     validateEmail,
     validatePassword
 }
