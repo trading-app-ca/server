@@ -1,8 +1,34 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require("../models/User");
-const { response } = require('../serverConfig');
+const RevokedToken = require('../models/RevokedToken');
 
+const revokeToken = async (token) => {
+    try {
+        // Log token being revoked to server console
+        console.log('Revoking token:', token);
+
+        // Decode JWT token
+        const decodedToken = jwt.decode(token);
+
+        if (!decodedToken) {
+            throw new Error('Invalid token');
+        }
+
+        const expiryTime = Date.now();
+        console.log(`time now: ${Date.now()}`,'Token expiry time in ms:', expiryTime);
+
+        const revokedToken = new RevokedToken({ token: token, revokedAt:  expiryTime});
+        await revokedToken.save();
+
+        console.log('Token revoked successfully');
+        return { msg: 'Token revoked succesfully'};
+
+    } catch (error) {
+        // Log caught error to server console and return server error to client
+        return { msg: `Error during token revocation: ` + error.message };
+    }
+};
 
 const registerUser = async (request, response) => {
     // Log user details to server console
@@ -131,15 +157,20 @@ const loginUser = async (request, response) => {
 const logoutUser = async(request, response) => {
     try {
         // Retrieve JWT token from header
-        const token = request.header('Authorization');
+        const token = request.header('Authorization').replace('Bearer ', '');
         // Check token exists
         if (!token) {
             console.log('No token provided')
             return response.status(400).json({ msg: 'No token provided' });
         }
         // Revoke token
+        const revocationResult = await revokeToken(token);
 
         // Respond to client
+        if (revocationResult.msg.startsWith('Error')) {
+            console.error(revocationResult.msg);
+            return response.status(500).json({ msg: 'Server error'});
+        }
         response.json({ msg: 'User logged out successfully' });
     } catch (error) {
         // Log caught error to server console and return server error to client
