@@ -18,7 +18,12 @@ const validateLastName = [
         .matches(/^\S+$/).withMessage('Last name must not contain spaces')
 ];
 
-const validateEmail = check('email', 'Please include a valid email').isEmail();
+const validateEmail = [
+    check('email')
+        .exists().withMessage('Email is required')
+        .bail()
+        .isEmail().withMessage('Please include a valid email')
+];
 
 const validatePassword = [
     check('password')
