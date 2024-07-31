@@ -1,4 +1,4 @@
-const { check } = require('express-validator');
+const { body, check } = require('express-validator');
 
 const validateFirstName = [
     check('firstName')
@@ -37,9 +37,20 @@ const validatePassword = [
         })
 ];
 
+const validateAllowedFields = (allowedFields) => {
+    return body().custom(body => {
+        const extraFields = Object.keys(body).filter(field => !allowedFields.includes(field));
+        if (extraFields.length > 0) {
+            throw new Error(`Extra fields are not allowed: ${extraFields.join(', ')}`);
+        }
+        return true;
+    });
+};
+
 module.exports = {
     validateFirstName,
     validateLastName,
     validateEmail,
-    validatePassword
+    validatePassword,
+    validateAllowedFields
 }
