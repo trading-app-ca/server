@@ -180,8 +180,56 @@ const logoutUser = async(request, response) => {
 };
 
 
+const verifyPassword = async(request, response) => {
+    try {
+
+        // Retrieve JWT token from header
+        const token = request.header('Authorization').replace('Bearer ', '');
+
+        // Check token exists
+        if (!token) {
+            console.log('No token provided')
+            return response.status(400).json({ msg: 'No token provided' });
+        }
+
+        // Verify token
+        const decodedJwt = jwt.verify(token, process.env.JWT_SECRET);
+
+        // Find user by id
+        let user = await User.findById(decodedJwt.user.id);
+
+        // Retrieve password from request body
+        const { password: passwordToVerify } = request.body;
+
+        // User not found log to server console and send response to client
+        if (!user) {
+            console.log('User not found');
+            return response.status(404).json({ msg: 'User not found' });
+        }
+
+        // Verify password against user
+        const passwordVerified = await bcrypt.compare(passwordToVerify, user.password);
+
+        // Incorrect password log to server console and send response to client
+        if (!passwordVerified) {
+            console.log('Incorrect password');
+            return response.status(400).json({ msg: 'Incorrect password'});
+        }
+
+        // Password verified log to server console and send response to client
+        console.log('Password verified');
+        response.json({ msg: "Verified" });
+    } catch (error) {
+        // Log caught error to server console and return server error to client
+        console.error(error.message);
+        response.status(500).send('Server error');
+    }
+};
+
+
 module.exports = {
     registerUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    verifyPassword
 }
