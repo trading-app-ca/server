@@ -32,6 +32,7 @@ module.exports = async function(request, response, next) {
         // Verify token has a user object
         const user = await User.findById(verifiedToken.user.id);
         if (!user) {
+            console.log('Authorization denied, user not found');
             return response.status(401).json({ msg: 'Authorization denied, user not found' });
         }
         

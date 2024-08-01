@@ -7,7 +7,7 @@ const AssetSchema = new mongoose.Schema({
 });
 
 const PortfolioSchema = new mongoose.Schema({
-    user: { type: mongoose.Schema.types.objectId, ref: 'User', required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     assets: [AssetSchema]
 });
 

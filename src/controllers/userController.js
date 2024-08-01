@@ -1,6 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const RevokedToken = require('../models/RevokedToken');
+const User = require('../models/User');
+const Portfolio = require('../models/Portfolio');
+const Trade = require('../models/Trade');
+const Transaction = require('../models/Transaction');
 const { revokeToken } = require('./authController');
 
 const getUserInfo = async(request, response) => {
@@ -81,9 +84,48 @@ const updateUserInfo = async(request, response) => {
         console.error('Error:', error.message);
         response.status(500).send(`Server error`);
     }
-}
+};
+
+
+const deleteUser = async(request, response) => {
+    try {
+        console.log('Deleting user');
+
+        // Assign user object from request to user variable
+        const userId = request.user.id;
+
+        if (!userId) {
+            console.log('User not found');
+            return response.status(404).json({ msg: 'User not found' });
+        }
+
+        // Delete the user
+        await User.findByIdAndDelete(userId);
+        console.log('Successfully deleted the user')
+
+        // Delete the user's portfolio
+        await Portfolio.findOneAndDelete({ user: userId });
+        console.log('Successfully deleted the portfolio')
+
+        // Delete the user's trades
+        await Trade.deleteMany({ user: userId });
+        console.log('Successfully deleted the trades')
+
+        // Delete the user's transactions
+        await Transaction.deleteMany({ user: userId });
+        console.log('Successfully deleted the transactions')
+
+        res.json({ msg: 'User and associated data deleted successfully' });
+
+    } catch (error) {
+        // Log caught error to server console and return server error to client
+        console.error('Error:', error.message);
+        response.status(500).send(`Server error`);
+    }
+};
 
 module.exports = {
     getUserInfo,
     updateUserInfo,
+    deleteUser,
 }
