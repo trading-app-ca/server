@@ -23,9 +23,20 @@ module.exports = async function(request, response, next) {
         }
 
         // Verify token
-        const decodedJwt = jwt.verify(token, process.env.JWT_SECRET);
-        request.User = decodedJwt.User;
+        const verifiedToken = jwt.verify(token, process.env.JWT_SECRET);
+        if (!verifiedToken) {
+            console.log('Token is not valid')
+            return response.status(401).json({ msg: 'Token is not valid' });
+        }
+
+        const user = await User.findById(verifiedToken.user.id);
+        if (!user) {
+            return response.status(401).json({ msg: 'Authorization denied, user not found' });
+        }
         console.log('User authorized, Token is Valid');
+
+        request.user = user;
+        request.token = token;
 
         next();
     } catch (error) {

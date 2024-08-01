@@ -11,13 +11,16 @@ const revokeToken = async (token) => {
         // Decode JWT token
         const decodedToken = jwt.decode(token);
 
+        // Check if token is not valid
         if (!decodedToken) {
             throw new Error('Invalid token');
         }
 
+        // Set expiry time to current time
         const expiryTime = Date.now();
         console.log(`time now: ${Date.now()}`,'Token expiry time in ms:', expiryTime);
 
+        // Create new revoked token with token received
         const revokedToken = new RevokedToken({ token: token, revokedAt:  expiryTime});
         await revokedToken.save();
 
@@ -156,13 +159,9 @@ const loginUser = async (request, response) => {
 
 const logoutUser = async(request, response) => {
     try {
-        // Retrieve JWT token from header
-        const token = request.header('Authorization').replace('Bearer ', '');
-        // Check token exists
-        if (!token) {
-            console.log('No token provided')
-            return response.status(400).json({ msg: 'No token provided' });
-        }
+        // Assign token from request to token variable
+        const token = request.token;
+
         // Revoke token
         const revocationResult = await revokeToken(token);
 
@@ -183,22 +182,10 @@ const logoutUser = async(request, response) => {
 const verifyPassword = async(request, response) => {
     try {
 
-        // Retrieve JWT token from header
-        const token = request.header('Authorization').replace('Bearer ', '');
+        // Assign user object from request to user variable
+        let user = request.user;
 
-        // Check token exists
-        if (!token) {
-            console.log('No token provided')
-            return response.status(400).json({ msg: 'No token provided' });
-        }
-
-        // Verify token
-        const decodedJwt = jwt.verify(token, process.env.JWT_SECRET);
-
-        // Find user by id
-        let user = await User.findById(decodedJwt.user.id);
-
-        // Retrieve password from request body
+        // Retrieve password to verify from request body
         const { password: passwordToVerify } = request.body;
 
         // User not found log to server console and send response to client
