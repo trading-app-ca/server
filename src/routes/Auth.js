@@ -11,7 +11,7 @@ router.post('/register', validateRegister, registerUser);
 
 // @route POST /api/auth/login
 // @desc Authenticate user & retrieve token
-router.post('/login', validateLogin , loginUser);
+router.post('/login', validateLogin, loginUser);
 
 // @route POST /api/auth/logout
 // @desc Logout a user
