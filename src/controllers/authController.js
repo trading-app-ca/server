@@ -218,5 +218,6 @@ module.exports = {
     registerUser,
     loginUser,
     logoutUser,
-    verifyPassword
+    verifyPassword,
+    revokeToken,
 }
