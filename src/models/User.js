@@ -7,6 +7,16 @@ const UserSchema = new mongoose.Schema({
     password: { type: String, required: true },
     balance: { type: Number,  default: 0, required: false },
     createdAt: { type: Date, default: Date.now, required: true }
+}, {
+    toJSON: {
+        transform: function (doc, userObject) {
+            delete userObject.password;
+            delete userObject.__v;
+            delete userObject._id;
+            
+            return userObject
+        }
+    }
 });
 
 module.exports = mongoose.model('User', UserSchema);
