@@ -5,6 +5,16 @@ const TransactionSchema = new mongoose.Schema({
     type: { type: String, required: true },
     amount: { type: Number, required: true },
     date: { type: Date, default: Date.now, required: true }
+},{
+    toJSON: {
+        transform: function (doc, transactionObject) {
+            delete transactionObject.user;
+            delete transactionObject.__v;
+            delete transactionObject._id;
+            
+            return transactionObject
+        }
+    }
 });
 
 module.exports = mongoose.model('Transaction', TransactionSchema);

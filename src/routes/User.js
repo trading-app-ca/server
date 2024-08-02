@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const { getUserInfo, updateUserInfo, deleteUser, depositFunds, withdrawFunds } = require('../controllers/userController');
 const validateUserInfo = require('../middleware/validateUpdateUserInfo');
 const validateFundsAmount = require('../middleware/validateFundsAmount');
+const { getUserInfo, updateUserInfo, deleteUser, depositFunds, withdrawFunds } = require('../controllers/userController');
 
 // @route GET /api/user
 // @desc Retrieve user info
