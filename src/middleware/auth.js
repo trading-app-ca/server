@@ -29,12 +29,16 @@ module.exports = async function(request, response, next) {
             return response.status(401).json({ msg: 'Token is not valid' });
         }
 
+        // Verify token has a user object
         const user = await User.findById(verifiedToken.user.id);
         if (!user) {
+            console.log('Authorization denied, user not found');
             return response.status(401).json({ msg: 'Authorization denied, user not found' });
         }
+        
         console.log('User authorized, Token is Valid');
 
+        // Add user object and token to request
         request.user = user;
         request.token = token;
 
