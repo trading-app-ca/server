@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require("../models/User");
+const { createPortfolio } = require('../controllers/portfolioController');
 const RevokedToken = require('../models/RevokedToken');
 
 const revokeToken = async (token) => {
@@ -73,7 +74,7 @@ const registerUser = async (request, response) => {
         await user.save();
 
         // Create portfolio for user
-        // await createPortfolio(user.id);      // NEEDS TO BE IMPLIMENTED
+        await createPortfolio(user);
 
         const payload = {
             user: {
