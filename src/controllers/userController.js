@@ -13,11 +13,14 @@ const getUserInfo = async(request, response) => {
         // Assign user object from request to user variable
         const user = request.user;
 
+        // Check user exists
         if (!user) {
             console.log('User not found');
             return response.status(404).json({ msg: 'User not found' });
         }
 
+        // log success response to server log and return user info to client 
+        console.log('Returning user info')
         response.json(user);
     } catch (error) {
         // Log caught error to server console and return server error to client
@@ -34,6 +37,7 @@ const updateUserInfo = async(request, response) => {
         // Assign user object from request to user variable
         const user = request.user;
 
+        // Check user exists
         if (!user) {
             console.log('User not found');
             return response.status(404).json({ msg: 'User not found' });
@@ -67,16 +71,18 @@ const updateUserInfo = async(request, response) => {
                 },
             };
 
+            // Sign the new JWT token
             request.token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 360000 });
         } else {
             // Save user object
             await user.save();
         }
 
-        // log success response to server log and return updated user info to client
-        console.log('User info updates successfuly')
-
+        // Set token to request token
         const token = request.token;
+
+        // log success response to server log and return updated user info and token to client
+        console.log('User info updates successfuly')
         response.json({user, token});
 
     } catch (error) {
@@ -94,6 +100,7 @@ const deleteUser = async(request, response) => {
         // Assign user object from request to user variable
         const userId = request.user.id;
 
+        // Check user exists
         if (!userId) {
             console.log('User not found');
             return response.status(404).json({ msg: 'User not found' });
@@ -113,8 +120,9 @@ const deleteUser = async(request, response) => {
 
         // Delete the user's transactions
         await Transaction.deleteMany({ user: userId });
-        console.log('Successfully deleted the transactions')
 
+        // return succesful response to server and client
+        console.log('Successfully deleted the transactions')
         response.json({ msg: 'User and associated data deleted successfully' });
 
     } catch (error) {
