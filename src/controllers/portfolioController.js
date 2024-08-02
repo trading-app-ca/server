@@ -1,6 +1,20 @@
 const Portfolio = require("../models/Portfolio");
 
 
+const createPortfolio = async(user) => {
+    try {
+        console.log('Creating portfolio');
+
+        const newPortfolio = new Portfolio({ user: user.id, assets: [] });
+        await newPortfolio.save();
+        console.log(`Portfolio created for user ${user}`);
+    } catch (error) {
+        // Log caught error to server console and return server error to client
+        console.error('Error:', error.message);
+        response.status(500).send(`Server error`);
+    }
+}
+
 const getPortfolio = async(request, response) => {
     try {
         console.log('Retreiving Portfolio');
@@ -36,4 +50,5 @@ const getPortfolio = async(request, response) => {
 
 module.exports = {
     getPortfolio,
+    createPortfolio,
 };
