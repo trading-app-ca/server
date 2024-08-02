@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const { getUserInfo, updateUserInfo, deleteUser, depositFunds } = require('../controllers/userController');
+const { getUserInfo, updateUserInfo, deleteUser, depositFunds, withdrawFunds } = require('../controllers/userController');
 const validateUserInfo = require('../middleware/validateUpdateUserInfo');
 const { validateBalance, validateAllowedFields } = require('../middleware/validators');
 const validateFundsAmount = require('../middleware/validateFundsAmount');
@@ -21,5 +21,9 @@ router.delete('/', auth, deleteUser);
 // @route   POST /api/user/deposit
 // @desc    Deposit funds
 router.post('/deposit', auth, validateFundsAmount, depositFunds);
+
+// @route   POST /api/user/withdraw
+// @desc    Withdraw funds
+router.post('/withdraw', auth, validateFundsAmount, withdrawFunds);
 
 module.exports = router;

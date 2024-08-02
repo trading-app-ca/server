@@ -134,19 +134,63 @@ const depositFunds = async(request, response) => {
         // Assign user variable to user object in request
         const user = request.user;
 
+        // Create new transaction
         const newTransaction = new Transaction({
             user: user.id,
             type: 'Deposit',
             amount
         });
         
-        await newTransaction.save();
-
+        // Set new user balance
         user.balance += amount;
+        
+        // Save newTransaction and user object changes to database
+        await newTransaction.save();
+        await user.save();
 
-        user.save();
-
+        // return succesful response to server and client
+        console.log(`Successfuly, deposited $${amount}`);
         response.json({ msg: `Successfuly, deposited $${amount}`});
+    } catch (error) {
+        // Log caught error to server console and return server error to client
+        console.error('Error:', error.message);
+        response.status(500).send(`Server error`);
+    }
+};
+
+
+const withdrawFunds = async(request, response) => {
+    try{
+        console.log('Withdrawing funds');
+        // Retrieve amount to withdraw from request body
+        const { amount } = request.body;
+
+        // Assign user variable to user object in request
+        const user = request.user;
+
+        // Create new transaction
+        const newTransaction = new Transaction({
+            user: user.id,
+            type: 'Withdraw',
+            amount
+        });
+        
+        // Set new user balance
+        user.balance -= amount;
+
+        // Check balance is greater then zero
+        if (user.balance < 0) {
+            console.log('Insufficient funds');
+            return response.status(400).json({ msg: 'Insufficient funds' });
+        }
+        
+        // Save newTransaction and user object changes to database
+        await newTransaction.save();
+        await user.save();
+
+        // return succesful response to server and client
+        console.log(`Successfuly, withdrew $${amount}`);
+        response.json({ msg: `Successfuly, withdrew $${amount}`});
     } catch (error) {
         // Log caught error to server console and return server error to client
         console.error('Error:', error.message);
@@ -158,5 +202,6 @@ module.exports = {
     getUserInfo,
     updateUserInfo,
     deleteUser,
-    depositFunds
+    depositFunds,
+    withdrawFunds,
 }
