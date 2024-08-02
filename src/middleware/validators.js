@@ -55,6 +55,19 @@ const validateBalance = [
         })
 ];
 
+const validateAmount = [
+    check('amount')
+        .exists().withMessage('Amount is required')
+        .bail()
+        .isNumeric().withMessage('Amount must be a number')
+        .custom(value => {
+            if (value <= 0) {
+                throw new Error('Amount must be greater then zero');
+            }
+            return true;
+        })
+];
+
 const validateAllowedFields = (allowedFields) => {
     return body().custom(body => {
         const extraFields = Object.keys(body).filter(field => !allowedFields.includes(field));
@@ -71,5 +84,6 @@ module.exports = {
     validateEmail,
     validatePassword,
     validateBalance,
+    validateAmount,
     validateAllowedFields
 }

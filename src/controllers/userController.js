@@ -115,8 +115,38 @@ const deleteUser = async(request, response) => {
         await Transaction.deleteMany({ user: userId });
         console.log('Successfully deleted the transactions')
 
-        res.json({ msg: 'User and associated data deleted successfully' });
+        response.json({ msg: 'User and associated data deleted successfully' });
 
+    } catch (error) {
+        // Log caught error to server console and return server error to client
+        console.error('Error:', error.message);
+        response.status(500).send(`Server error`);
+    }
+};
+
+
+const depositFunds = async(request, response) => {
+    try{
+        console.log('Depositing funds');
+        // Retrieve amount to deposit from request body
+        const { amount } = request.body;
+
+        // Assign user variable to user object in request
+        const user = request.user;
+
+        const newTransaction = new Transaction({
+            user: user.id,
+            type: 'Deposit',
+            amount
+        });
+        
+        await newTransaction.save();
+
+        user.balance += amount;
+
+        user.save();
+
+        response.json({ msg: `Successfuly, deposited $${amount}`});
     } catch (error) {
         // Log caught error to server console and return server error to client
         console.error('Error:', error.message);
@@ -128,4 +158,5 @@ module.exports = {
     getUserInfo,
     updateUserInfo,
     deleteUser,
+    depositFunds
 }
