@@ -6,6 +6,16 @@ const TradeSchema = new mongoose.Schema({
     quantity: { type: Number, required: true },
     price: { type: Number, required: true },
     date: { type: Date, default: Date.now, required: true }
+},{
+    toJSON: {
+        transform: function (doc, tradeObject) {
+            delete tradeObject.user;
+            // delete tradeObject.__v;
+            // delete tradeObject._id;
+            
+            return transactionObject
+        }
+    }
 });
 
 module.exports = mongoose.model('Trade', TradeSchema);
