@@ -68,6 +68,48 @@ const validateAmount = [
         })
 ];
 
+const validateQuantity = [
+    check('quantity')
+        .exists().withMessage('Quantity is required')
+        .bail()
+        .isNumeric().withMessage('Quantity must be a number')
+        .custom(value => {
+            if (value <= 0) {
+                throw new Error('Quantity must be greater then zero');
+            }
+            return true;
+        })
+];
+
+const validateType = [
+    check('type')
+        .exists().withMessage('Type is required')
+        .bail()
+        .isIn(['buy', 'sell']).withMessage(`Type must be either 'buy' or 'sell'`)
+];
+
+const validateAssetName = [
+    check('assetName')
+        .exists().withMessage('Asset name is required')
+        .bail()
+        .isLength({ min: 1, max: 30 }).withMessage('Asset name must be between 1 and 30 characters long')
+        .isAlpha().withMessage('Asset name must contain only alphabetic characters')
+        .matches(/^\S+$/).withMessage('Asset name must not contain spaces')
+];
+
+const validatePrice = [
+    check('price')
+        .exists().withMessage('Price is required')
+        .bail()
+        .isNumeric().withMessage('Price must be a number')
+        .custom(value => {
+            if (value <= 0) {
+                throw new Error('Price must be greater then zero');
+            }
+            return true;
+        })
+];
+
 const validateAllowedFields = (allowedFields) => {
     return body().custom(body => {
         const extraFields = Object.keys(body).filter(field => !allowedFields.includes(field));
@@ -78,6 +120,7 @@ const validateAllowedFields = (allowedFields) => {
     });
 };
 
+
 module.exports = {
     validateFirstName,
     validateLastName,
@@ -85,5 +128,9 @@ module.exports = {
     validatePassword,
     validateBalance,
     validateAmount,
-    validateAllowedFields
+    validateQuantity,
+    validateAssetName,
+    validatePrice,
+    validateType,
+    validateAllowedFields,
 }
