@@ -1,5 +1,6 @@
+const Portfolio = require('../models/Portfolio');
 const Trade = require('../models/Trade');
-const User = require('../models/User');
+const { updatePortfolioAssets } = require('./portfolioController');
 
 
 const getTrades = async(request, response) => {
@@ -36,7 +37,7 @@ const placeTrade = async(request, response) => {
         // Destructure the 'type', 'assetName', 'quantity', and 'price' fields from the request body 
         const { type, assetName, quantity, price } = request.body;
 
-        switch (type.toLowerCase()) {
+        switch (type) {
             case 'buy':
                 console.log('Buying an asset');
 
@@ -54,11 +55,29 @@ const placeTrade = async(request, response) => {
                 user.balance -= totalCost;
                 await user.save();
 
-                // NEED TO IMPLIMENT UPDATE AVERAGE PURCHASE PRICE
                 break;
 
             case 'sell':
-                console.log('Sell an asset');
+                console.log('Selling an asset');
+
+                // Find associated user portfolio
+                const portfolio = await Portfolio.findOne({ user: user.id });
+
+                // Find asset being sold inside portfolio
+                const asset = portfolio.assets.find(a => a.asset === assetName);
+
+                // Check user has sufficient quantity of asset to sell
+                if (!asset || asset.quantity < quantity) {
+                    const errorMessage = 'Insufficient quantity of asset to sell';
+                    console.error(errorMessage);
+                    return response.status(400).json({ msg: errorMessage });
+                }
+
+                // Calculate the total profit of the sale
+                const totalProfit = quantity * price;
+                user.balance += totalProfit;
+                await user.save();
+
                 break
 
             default:
@@ -66,6 +85,27 @@ const placeTrade = async(request, response) => {
                 console.log('Invalid trade type');
                 response.status(400).send('Invalid trade type');
         }
+
+        // Create a new Trade object with supplied fields
+        const newTrade = new Trade({
+            user: user.id,
+            asset: assetName,
+            quantity,
+            price,
+            type
+        });
+
+        console.log(newTrade);
+
+        // Save new Trade object to database
+        await newTrade.save();
+
+        // Update portfolio assets
+        await updatePortfolioAssets(newTrade, user.id);
+
+        // Log succes response to server console and return new trade to client
+        console.log(`Trade recorded: ${type} ${quantity} ${assetName} at ${price}`);
+        response.json({ msg: 'Success', newTrade});
     } catch (error) {
         // Log caught error to server console and return server error to client
         console.error('Error:', error.message);
