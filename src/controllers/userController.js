@@ -157,8 +157,8 @@ const depositFunds = async(request, response) => {
         await user.save();
 
         // return succesful response to server and client
-        console.log(`Successfuly, deposited $${amount}`);
-        response.json({ msg: `Successfuly, deposited $${amount}`});
+        console.log(`Successfully, deposited $${amount}`);
+        response.json({ msg: `Successfully, deposited $${amount}`});
     } catch (error) {
         // Log caught error to server console and return server error to client
         console.error('Error:', error.message);
@@ -197,8 +197,8 @@ const withdrawFunds = async(request, response) => {
         await user.save();
 
         // return succesful response to server and client
-        console.log(`Successfuly, withdrew $${amount}`);
-        response.json({ msg: `Successfuly, withdrew $${amount}`});
+        console.log(`Successfully, withdrew $${amount}`);
+        response.json({ msg: `Successfully, withdrew $${amount}`});
     } catch (error) {
         // Log caught error to server console and return server error to client
         console.error('Error:', error.message);
