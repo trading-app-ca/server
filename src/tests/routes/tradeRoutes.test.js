@@ -7,7 +7,7 @@ const delay = require('../delay'); // Import the delay helper
 
 beforeAll(async () => {
     await connectTestDB(); // Connect to the test database
-    await server.listen(5001); // Start the server on a different port for testing
+    await server.listen(5003); // Start the server on a different port for testing
 });
 
 afterAll(async () => {

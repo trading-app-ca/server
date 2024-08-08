@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 
 beforeAll(async () => {
     await connectTestDB(); // Connect to the test database
-    await server.listen(5003); // Start the server on a different port for testing
+    await server.listen(5002); // Start the server on a different port for testing
 });
 
 afterAll(async () => {
