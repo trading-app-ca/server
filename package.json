@@ -13,6 +13,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "testcoverage": "npx jest --coverage",
     "server": "node src/server.js",
     "dev": "nodemon src/server.js"
   },
